@@ -1,0 +1,1366 @@
+Index: src/main/java/org/fest/swing/driver/JAppletDriver.java
+===================================================================
+--- src/main/java/org/fest/swing/driver/JAppletDriver.java	(revision 0)
++++ src/main/java/org/fest/swing/driver/JAppletDriver.java	(revision 0)
+@@ -0,0 +1,126 @@
++/* Created on Oct 13, 2009
++ * Mel Llaguno
++ * http://www.aclaro.com
++ * ------------------------------------
++ * 
++ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
++ * in compliance with the License. You may obtain a copy of the License at
++ * 
++ * http://www.apache.org/licenses/LICENSE-2.0
++ * 
++ * Unless required by applicable law or agreed to in writing, software distributed under the License
++ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
++ * or implied. See the License for the specific language governing permissions and limitations under
++ * the License.
++ * 
++ * Copyright @2009 the original author or authors.
++ */
++
++package org.fest.swing.driver;
++
++import java.applet.Applet;
++import java.applet.AppletContext;
++import java.applet.AppletStub;
++import java.net.URL;
++import java.util.Enumeration;
++
++import javax.swing.JApplet;
++
++import org.fest.swing.core.Robot;
++import org.fest.swing.driver.ContainerDriver;
++
++/**
++ * Understands simulation of user input on a <code>{@link JApplet}</code>. This
++ * driver only focuses on behavior present only in <code>{@link JApplet}</code>s.
++ * Unlike the AppletViewer, the AppletContext and AppletStub used to communicate
++ * with the applet and is provided by the Browser.
++ *  
++ * This class is intended for internal use only.
++ *
++ * @author Mel Llaguno
++ */
++
++public class JAppletDriver extends ContainerDriver implements AppletStub{
++
++	private JApplet applet;
++	
++	/**
++	 * Creates a new <code>{@link JAppletDriver}</code>.
++	 * @param robot the robot to use to simulate user input.
++	 * @param newApplet the applet being manipulated.
++	 */
++	public JAppletDriver(Robot robot, JApplet newApplet) {
++		super(robot);
++		applet = newApplet;
++	}
++	
++	/**
++	 * The <code>AppletContext can be accessed with the initial applet and provides
++	 * information provided by the browser environment in which the applet was invoked.
++	 * @return AppletContext the <code>AppletContext</code> associated with the initial applet.
++	 */
++	public AppletContext getAppletContext() {
++		return applet.getAppletContext();
++	}
++	
++	/**
++	 * Resizes the applet.
++	 * @param width the new requested width for the applet.
++	 * @param height the new requested height for the applet.
++	 */
++	public void appletResize(int width, int height) {
++		applet.resize(width, height);
++	}
++
++	/**
++	 * Gets the base URL which contains the applet.
++	 * @return the base <code>URL</code> of the directory which contains the applet
++	 */
++	public URL getCodeBase() {
++		return applet.getCodeBase();
++	}
++
++	/**
++	 * Gets the URL of the document in which the applet is embedded.
++	 * @return the <code>URL</code> of the document that contains the applet.
++	 */
++	public URL getDocumentBase() {
++		return applet.getDocumentBase();
++	}
++
++	/**
++	 * The value of the named parameter in the HTML tag <param>
++	 * @param name the parameter name
++	 * @return the value of the named parameter or <code>null</code> if not set.
++	 */
++	public String getParameter(String name) {
++		return applet.getParameter(name);
++	}
++
++	/**
++	 * Asserts that the applet is active.
++	 * @return <code>true</code> if the applet is active; <code>false</code> otherwise.
++	 */
++	public boolean isActive() {
++		return applet.isActive();
++	}
++	
++	/**
++	 * The AppletContext is aware of all other applets loaded in the same context as
++	 * the initial applet. This method provides a means of accessing applets in the
++	 * same context.
++	 * @param name the name of the applet.
++	 * @return the applet with the given name, or <code>null</code> if not found. 
++	 */
++	public Applet getApplet(String name) {
++		return applet.getAppletContext().getApplet(name);
++	}
++	
++	/**
++	 * Finds all the applets in the document represented by this applet context.
++	 * @return an enumeration of <code>Applet</code>s in the document represented by this applet context.
++	 */
++	public Enumeration<Applet> getApplets() {
++		return applet.getAppletContext().getApplets();
++	}
++}
+Index: src/main/java/org/fest/swing/fixture/AlternativeAssertionFixture.java
+===================================================================
+--- src/main/java/org/fest/swing/fixture/AlternativeAssertionFixture.java	(revision 0)
++++ src/main/java/org/fest/swing/fixture/AlternativeAssertionFixture.java	(revision 0)
+@@ -0,0 +1,69 @@
++/* Created on Oct 13, 2009
++ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
++ * in compliance with the License. You may obtain a copy of the License at
++ * 
++ * http://www.apache.org/licenses/LICENSE-2.0
++ * 
++ * Unless required by applicable law or agreed to in writing, software distributed under the License
++ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
++ * or implied. See the License for the specific language governing permissions and limitations under
++ * the License.
++ * 
++ * Copyright @2009 the original author or authors.
++ */
++
++package org.fest.swing.fixture;
++
++import org.fest.swing.timing.Timeout;
++
++/**
++ * Understands alternative "is" based assertions
++ * 
++ * @author Mel Llaguno
++ */
++public interface AlternativeAssertionFixture {
++	
++	/**
++	 * Asserts that this fixture's GUI component has input focus.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's GUI component does not have input focus.
++	 */
++	AlternativeAssertionFixture isFocused();
++	
++	/**
++	 * Asserts that this fixture's GUI component is disabled.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's GUI component is enabled.
++	 */
++	AlternativeAssertionFixture isDisabled();
++	
++	/**
++	 * Asserts that this fixture's GUI component is enabled.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's GUI component is disabled.
++	 */
++	AlternativeAssertionFixture isEnabled();
++	
++	/**
++	 * Asserts that this fixture's GUI component is enabled.
++	 * @param timeout the time this fixture will wait for the component to be enabled.
++	 * @return this fixture.
++	 * @throws WaitTimedOutError if this fixture's GUI component is never enabled.
++	 */
++	AlternativeAssertionFixture isEnabled(Timeout timeout);
++	
++	/**
++	 * Asserts that this fixture's GUI component is not visible.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's GUI component is visible.
++	 */
++	AlternativeAssertionFixture isNotVisible();
++	
++	/**
++	 * Asserts that this fixture's GUI component is visible.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's GUI component is not visible.
++	 */
++	AlternativeAssertionFixture isVisible();
++	
++}
+Index: src/main/java/org/fest/swing/fixture/JAppletFixture.java
+===================================================================
+--- src/main/java/org/fest/swing/fixture/JAppletFixture.java	(revision 0)
++++ src/main/java/org/fest/swing/fixture/JAppletFixture.java	(revision 0)
+@@ -0,0 +1,448 @@
++/* Created on Oct 13, 2009
++ * Mel Llaguno
++ * http://www.aclaro.com
++ * ------------------------------------
++ * 
++ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
++ * in compliance with the License. You may obtain a copy of the License at
++ * 
++ * http://www.apache.org/licenses/LICENSE-2.0
++ * 
++ * Unless required by applicable law or agreed to in writing, software distributed under the License
++ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
++ * or implied. See the License for the specific language governing permissions and limitations under
++ * the License.
++ * 
++ * Copyright @2009 the original author or authors.
++ */
++
++package org.fest.swing.fixture;
++
++import static org.fest.swing.core.KeyPressInfo.keyCode;
++import static org.fest.swing.data.TableCell.row;
++
++import java.awt.Point;
++import java.io.File;
++
++import javax.swing.JApplet;
++
++import org.fest.swing.core.BasicRobot;
++import org.fest.swing.core.KeyPressInfo;
++import org.fest.swing.core.MouseButton;
++import org.fest.swing.core.MouseClickInfo;
++import org.fest.swing.core.Robot;
++import org.fest.swing.data.TableCell;
++import org.fest.swing.driver.JAppletDriver;
++import org.fest.swing.exception.ComponentLookupException;
++import org.fest.swing.exception.WaitTimedOutError;
++import org.fest.swing.timing.Timeout;
++
++/**
++ * Understands simulation of user input on a <code>{@link JApplet}</code>. Unlike <code>WindowFixture</code>, this
++ * driver only focuses on behavior present only in <code>{@link JApplet}</code>s. 
++ *
++ * @author Mel Llaguno
++ */
++
++public class JAppletFixture extends ContainerFixture<JApplet> 
++	implements CommonComponentFixture, AlternativeAssertionFixture, LiveConnectSupport{
++
++	private JAppletDriver driver;
++
++	/**
++	 * Creates a new <code>{@link JAppletFixture}</code
++	 * @param robot performs simulation of user events on a <code>JApplet</code>
++	 * @param appletName the name of the <code>JApplet</code> to find using the given <code>Robot</code>.
++	 * @throws NullPointerException if <code>robot</code> is <code>null</code>.
++	 * @throws ComponentLookupException if a matching <code>JApplet</code> could not be found.
++	 * @throws ComponentLookupException if more than one matching <code>JApplet</code> is found.
++	 */
++	public JAppletFixture(Robot robot, String appletName) {
++		super(robot, appletName, JApplet.class);
++		createDriver();
++	}
++	
++	/**
++	 * Creates a new <code>{@link JAppletFixture}</code 
++	 * @param robot performs simulation of user events on the given <code>JApplet</code>.
++	 * @param target the <code>JApplet</code> to be managed by this fixture;
++	 * @throws NullPointerException if <code>robot</code> is <code>null</code>.
++	 * @throws ComponentLookupException if a matching <code>JApplet</code> could not be found.
++	 * @throws ComponentLookupException if more than one matching <code>JApplet</code> is found.
++	 */
++	public JAppletFixture(Robot robot, JApplet target) {
++		super(robot, target);
++		createDriver();
++	}
++	
++	/**
++	 * Creates a new <code>{@link JAppletFixture}</code>. This constructor creates a new <code>{@link Robot}</code>
++	 * containing the current AWT hierarchy. To work against multiple applets in the same browser page, the
++	 * <code>{@link BasicRobot.robotWithCurrentAwtHierarchyWithOutScreenLock}</code> constructor MUST be used.
++	 * @param target the <code>JApplet</code> to be managed by this fixture.
++	 * @throws NullPointerException if the given target <code>JApplet</code> is <code>null</code>.
++	 */
++	public JAppletFixture(JApplet target) {
++		this(BasicRobot.robotWithCurrentAwtHierarchyWithoutScreenLock(),target);
++	}
++	
++	/**
++	 * Creates a new <code>{@link JAppletFixture}</code>. This constructor create a new <code>{@link Robot}</code>
++	 * containing the current AWT hierarchy. To work against multiple applets in the same browser page, the 
++	 * <code>{@link BasicRobot.robotWithCurrentAwtHierarchyWithOutScreenLock}</code> constructor MUST be used.
++	 * @param appletName the name of the <code>JApplet</code> to be managed by this fixture.
++	 * @throws NullPointerException if the given target <code>JApplet</code> is <code>null</code>.
++	 */
++	public JAppletFixture(String appletName) {
++		this(BasicRobot.robotWithCurrentAwtHierarchyWithoutScreenLock(), appletName);
++	}
++	
++	private void createDriver() {
++		driver(new JAppletDriver(robot, target));
++	}
++
++	/**
++	 * Sets the <code>{@link JAppletDriver}</code> to be used by this fixture;
++	 * @param newDriver the new <code>JApplet</code>.
++	 * @throws NullPointerException if the given driver is <code>null</code>.
++	 */
++	protected final void driver(JAppletDriver newDriver) {
++		validateNotNull(newDriver);
++		driver = newDriver;
++	}
++
++	/**
++	 * Simulates input focus to this fixture's <code>{@link JApplet}</code>.
++	 * @return this fixture.
++	 */
++	public JAppletFixture focus() {
++		driver.focus(target);
++		return this;
++	}
++
++	/**
++	 * Asserts that this fixture's <code>{@link JApplet}</code> has input focus.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's <code>JApplet</code> does not have input focus.
++	 */
++	public JAppletFixture requireFocused() {
++		driver.requireFocused(target);
++		return this;
++	}
++
++	/**
++	 * Simulates a user pressing a given key with the given modifiers on this fixture's <code>{@link JApplet}</code>.
++	 * Modifiers is a mask from the available <code>{@link java.awt.event.InputEvent}</code> masks.
++	 * @param keyPressInfo specifies the key and modifiers to press.
++	 * @return this fixture.
++	 * @throws NullPointerException if the given <code>KeyPressInfo</code> is <code>null</code>.
++	 * @throws IllegalArgumentException if the give code is not a valid key code.
++	 * @see KeyPressInfo
++	 */
++	public JAppletFixture pressAndReleaseKey(
++			KeyPressInfo keyPressInfo) {
++		driver.pressAndReleaseKey(target, keyPressInfo);
++		return this;
++	}
++
++	/**
++	 * Simulates a user pressing and releasing the given keys on the <code>{@link JApplet}</code> managed by this
++	 * fixture.
++	 * @param keyCodes one or more codes of the keys to press.
++	 * @return this fixture.
++	 * @throws NullPointerException if the given array of codes is <code>null</code>.
++	 * @throws IllegalArgumentException if any of the given code is not a valid key code.
++	 * @see java.awt.event.KeyEvent
++	 */
++	public JAppletFixture pressAndReleaseKeys(int... keyCodes) {
++		driver.pressAndReleaseKeys(target, keyCodes);
++		return this;
++	}
++
++	/**
++	 * Simulates a user pressing the given key on this fixture's <code>{@link JApplet}</code>.
++	 * @param keyCode the code of the key to press.
++	 * @return this fixture.
++	 * @throws IllegalArgumentException if the given code is not a valid key code.
++	 * @see java.awt.event.KeyEvent
++	 */
++	public JAppletFixture pressKey(int keyCode) {
++		driver.pressKey(target, keyCode);
++		return this;
++	}
++
++	/**
++	 * Simulates a user releasing the given key on this fixture's <code>{@link JApplet}</code>.
++	 * @param keyCode the code of the key to release.
++	 * @return this fixture.
++	 * @throws IllegalArgumentException if the given code is not a valid key code.
++	 * @see java.awt.event.KeyEvent
++	 */
++	public JAppletFixture releaseKey(int keyCode) {
++		driver.releaseKey(target, keyCode);
++		return this;
++	}
++
++	/**
++	 * Simulates a user clicking this fixture's <code>{@link JApplet}</code>.
++	 * @return this fixture.
++	 */
++	public JAppletFixture click() {
++		driver.click(target);
++		return this;
++	}
++
++	/**
++	 * Simulates a user clicking this fixture's <code>{@link JApplet}</code>.
++	 * @param button the button to click.
++	 * @return this fixture.
++	 * @throws NullPointerExceptin if the given <code>Button</code> is <code>null</code>.
++	 */
++	public JAppletFixture click(MouseButton button) {
++		driver.click(target, button);
++		return this;
++	}
++
++	/**
++	 * Simulates a user clicking this fixture's <code>{@link JApplet}</code>.
++	 * @param mouseClickInfo specifies the button to click and the times the button should be clicked.
++	 * @return this fixture.
++	 * @throws NullPointerException if the given <code>MouseClickInfo</code> is <code>null</code>.
++	 */
++	public JAppletFixture click(MouseClickInfo mouseClickInfo) {
++		driver.click(target, mouseClickInfo);
++		return this;
++	}
++
++	/**
++	 * Simulates a user double-clicking this fixture's <code>{@link JApplet}</code>.
++	 * @return this fixture.
++	 */
++	public JAppletFixture doubleClick() {
++		driver.doubleClick(target);
++		return this;
++	}
++
++	/**
++	 * Simulates a user right-clicking this fixture's <code>{@link JApplet}</code>.
++	 * @return this fixture.
++	 */
++	public JAppletFixture rightClick() {
++		driver.rightClick(target);
++		return this;
++	}
++
++	/**
++	 * Asserts that this fixture's <code>{@link JApplet}</code> is disabled.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's <code>JApplet</code> is enabled.
++	 */
++	public JAppletFixture requireDisabled() {
++		driver.requireDisabled(target);
++		return this;
++	}
++
++	/**
++	 * Asserts that this fixture's <code>{@link JApplet}</code> is enabled.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's <code>JApplet</code> is disabled.
++	 */
++	public JAppletFixture requireEnabled() {
++		driver.requireEnabled(target);
++		return this;
++	}
++
++	/**
++	 * Asserts that this fixture's <code>{@link JApplet}</code> is enabled.
++	 * @param timeout the time this fixture will wait for the component to be enabled.
++	 * @return this fixture.
++	 * @throws WaitTimedOutError if this fixture's <code>JApplet</code> is never enabled.
++	 */
++	public JAppletFixture requireEnabled(Timeout timeout) {
++		driver.requireEnabled(target, timeout);
++		return this;
++	}
++
++	/**
++	 * Asserts that this fixture's <code>{@link JApplet}</code> is not visible.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's <code>JApplet</code> is visible.
++	 */
++	public JAppletFixture requireNotVisible() {
++		driver.requireNotVisible(target);
++		return this;
++	}
++
++	/**
++	 * Asserts that this fixture's <code>{@link JApplet}</code> is visible.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's <code>JApplet</code> is not visible.
++	 */
++	public StateVerificationFixture requireVisible() {
++		driver.requireVisible(target);
++		return this;
++	}
++
++	/**
++	 * Shows a pop-up menu using this fixture's <code>{@link JApplet}</code> as the invoker of the pop-up menu.
++	 * @return a fixture that manages the displayed pop-up menu.
++	 * @throws IllegalStateException if this fixture's <code>JApplet</code> is disabled.
++	 * @throws IllegalStateException if this fixture's <code>JApplet</code> is not showing on the screen.
++	 * @throws ComponentLookupException if a pop-up menu cannot be found.
++	 */
++	public JPopupMenuFixture showPopupMenu() {
++		return new JPopupMenuFixture(robot, driver.invokePopupMenu(target));
++	}
++
++	/**
++	 * Shows a pop-up menu at the given point using this fixture's <code>{@link JApplet}</code> as the invoker
++	 * of the pop-up menu.
++	 * @param p the given point where to show the pop-up menu.
++	 * @return a fixture that manages the displayed pop-up menu.
++	 * @throws IllegalStateException if this fixture's <code>JApplet</code> is disabled.
++	 * @throws IllegalStateException if this fixture's <code>JApplet</code> is not showing on the screen.
++	 * @throws ComponentLookupException if a pop-up menu cannot be found.
++	 */
++	public JPopupMenuFixture showPopupMenuAt(Point p) {
++		return new JPopupMenuFixture(robot, driver.invokePopupMenu(target, p));
++	}
++
++	/**
++	 * Asserts that this fixture's <code>{@link JApplet}</code> is disabled.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's <code>JApplet</code> is enabled.
++	 */
++	public JAppletFixture isDisabled() {
++		this.requireDisabled();
++		return this;
++	}
++
++	/**
++	 * Asserts that this fixture's <code>{@link JApplet}</code> is enabled.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's <code>JApplet</code> is disabled.
++	 */
++	public JAppletFixture isEnabled() {
++		this.requireEnabled();
++		return this;
++	}
++
++	/**
++	 * Asserts that this fixture's <code>{@link JApplet}</code> is enabled.
++	 * @param timeout the time this fixture will wait for the component to be enabled.
++	 * @return this fixture.
++	 * @throws WaitTimedOutError if this fixture's <code>JApplet</code> is never enabled.
++	 */
++	public JAppletFixture isEnabled(Timeout timeout) {
++		this.requireEnabled(timeout);
++		return this;
++	}
++
++	/**
++	 * Asserts that this fixture's <code>{@link JApplet}</code> has input focus.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's <code>JApplet</code> does not have input focus.
++	 */
++	public JAppletFixture isFocused() {
++		this.isFocused();
++		return this;
++	}
++
++	/**
++	 * Asserts that this fixture's <code>{@link JApplet}</code> is not visible.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's <code>JApplet</code> is visible.
++	 */
++	public JAppletFixture isNotVisible() {
++		this.requireNotVisible();
++		return this;
++	}
++
++	/**
++	 * Asserts that this fixture's <code>{@link JApplet}</code> is visible.
++	 * @return this fixture.
++	 * @throws AssertionError if this fixture's <code>JApplet</code> is not visible.
++	 */
++	public JAppletFixture isVisible() {
++		this.requireVisible();
++		return this;
++	}
++	
++	/**
++	 * Factory method for creating KeyPressInfo objects
++	 * @param keyCode the ASCII code as an integer
++	 * @param modifier the bit-mask modifier as an integer
++	 * @return KeyPressInfo object which understands key chord presses (i.e. CTRL-A)
++	 */	 
++	public KeyPressInfo createKeyPressInfo(int keyCode, int modifier)
++	{
++		return keyCode(keyCode).modifiers(modifier);
++	}
++	
++	/**
++	 * Factory method for creating Point objects
++	 * @param x the x coordinate
++	 * @param y the y coordinate
++	 * @return Point object which understands a Cartesian coordinate.
++	 */
++	public Point createPoint(int x, int y)
++	{
++		return new Point(x,y);
++	}
++	
++	/**
++	 * Factory method for creating MouseButton objects
++	 * @param buttonMask the integer representation of the Button Mask
++	 * @return a MouseButton object which understands mouse button semantics.
++	 */
++	public MouseButton createMouseButton(int buttonMask)
++	{
++		return MouseButton.lookup(buttonMask);
++	}
++	
++	/**
++	 * Factory method for creating File objects
++	 * @param name the name of the file
++	 * @return a File object 
++	 */
++	public File createFile(String name) {
++		return new File(name);
++	}
++
++	/**
++	 * Factory method for creating TableCell objects
++	 * @param row the row for the cell
++	 * @param column the column for the cell
++	 * @return a TableCell object
++	 * @see org.fest.swing.fixture.LiveConnectSupport#createTableCell(int, int)
++	 */
++	public TableCell createTableCell(int row, int column) {
++		return row(row).column(column);
++	}
++	
++	public TableCell[] createTableCells(Object...objects) {
++		
++		TableCell [] array = new TableCell[objects.length];
++		for(int i = 0; i < objects.length; i++)
++		{
++			String[] rowColumn = ((String)objects[i]).split("\\,");		
++			array[i] = row(Integer.parseInt(rowColumn[0])).column(Integer.parseInt(rowColumn[1]));
++		}
++		return array;
++	}
++	
++	/**
++	 * Factory method for creating String Array objects
++	 * @param objects the array of objects to be converted into a String Array
++	 * @return String [] 
++	 */
++	public String [] createStringArray(Object...objects)
++	{
++		String [] array = new String[objects.length];
++		for(int i = 0; i < objects.length; i++)
++			array[i] = (String)objects[i];
++		
++		return array;
++	}
++
++}
+Index: src/main/java/org/fest/swing/fixture/LiveConnectSupport.java
+===================================================================
+--- src/main/java/org/fest/swing/fixture/LiveConnectSupport.java	(revision 0)
++++ src/main/java/org/fest/swing/fixture/LiveConnectSupport.java	(revision 0)
+@@ -0,0 +1,71 @@
++package org.fest.swing.fixture;
++
++import java.awt.Point;
++import java.io.File;
++
++import org.fest.swing.core.KeyPressInfo;
++import org.fest.swing.core.MouseButton;
++import org.fest.swing.data.TableCell;
++
++/**
++ * Understands support methods/members required to interact through LiveConnect.
++ * Certain functions require references to created java objects to work. Client
++ * side JavaScript code can then use these references with requests back to the
++ * applet.
++ * 
++ * @author Mel Llaguno
++ */
++public interface LiveConnectSupport {
++
++	/**
++	 * A factory method for creating the currentKeyPressInfo;
++	 * @param keyCode The ASCII KeyCode
++	 * @param modifier The bit-mask modifier
++	 * @return KeyPressInfo the object used to simulate a key press
++	 */
++	KeyPressInfo createKeyPressInfo(int keyCode, int modifier);
++	
++	/**
++	 * A factory method for creating a Point 
++	 * @param x the x coordinate
++	 * @param y the y coordinate
++	 * @return Point the object used to specify a location
++	 */
++	Point createPoint(int x, int y);
++	
++	/**
++	 * A factory method for creating a MouseButton object
++	 * @param buttonMask the integer representation of a button mask 
++	 * @return MouseButton the object used to simulate a mouse button  
++	 */
++	MouseButton createMouseButton(int buttonMask);
++	
++	/**
++	 * A factory method for creating a File object
++	 * @param name the path name of the file
++	 * @return File
++	 */
++	File createFile(String name);
++	
++	/**
++	 * A factory method for creating a TableCell
++	 * @param row the row of the cell
++	 * @param column the column of the cell
++	 * @return TableCell the object used to specify a cell location within a table
++	 */
++	TableCell createTableCell(int row, int column);
++
++	/**
++	 * A factory method for creating a TableCell Array
++	 * @param objects the objects to be converted to individual TableCell objects
++	 * @return TableCell[] the array of TableCells
++	 */
++	TableCell[] createTableCells(Object...objects);
++	
++	/**
++	 * A factory method for create a String []
++	 * @param objects
++	 * @return String [] the reference to the String Array
++	 */
++	String [] createStringArray(Object...objects);	
++}
+Index: src/main/java/org/fest/swing/monitor/ContextMonitor.java
+===================================================================
+--- src/main/java/org/fest/swing/monitor/ContextMonitor.java	(revision 451)
++++ src/main/java/org/fest/swing/monitor/ContextMonitor.java	(working copy)
+@@ -56,12 +56,15 @@
+     if (!(e instanceof ComponentEvent)) return;
+     ComponentEvent event = (ComponentEvent) e;
+     Component component = event.getComponent();
++    
+     // This is our sole means of accessing other AppContexts (if running within an applet). We look for window events
+     // beyond OPENED in order to catch windows that have already opened by the time we start listening but which are not
+     // in the Frame.getFrames list (i.e. they are on a different context). Specifically watch for COMPONENT_SHOWN on
+     // applets, since we may not get frame events for them.
++    
+     if (!(component instanceof Applet) && !(component instanceof Window)) return;
+     processEvent(event);
++    
+     // The context for root-level windows may change between WINDOW_OPENED and subsequent events.
+     if (!component.getToolkit().getSystemEventQueue().equals(context.storedQueueFor(component)))
+       context.addContextFor(component);
+@@ -85,11 +88,14 @@
+ 
+   private void recognizeAsOpenWindow(Component component) {
+     context.addContextFor(component);
++    
+     // Attempt to ensure the window is ready for input before recognizing it as "open".
+     // There is no Java API for this, so we institute an empirically tested delay.
+     if (!(component instanceof Window)) return;
+-    windows.attachNewWindowVisibilityMonitor((Window)component);
+-    windows.markAsShowing((Window) component);
++    
++    windows.attachNewWindowVisibilityMonitor((Window)component);   
++   	windows.markAsShowingInEDT((Window) component);
++    
+     // Native components don't receive events anyway...
+     if (component instanceof FileDialog) windows.markAsReady((Window) component);
+   }
+Index: src/main/java/org/fest/swing/monitor/Windows.java
+===================================================================
+--- src/main/java/org/fest/swing/monitor/Windows.java	(revision 451)
++++ src/main/java/org/fest/swing/monitor/Windows.java	(working copy)
+@@ -17,15 +17,19 @@
+ 
+ import java.awt.Component;
+ import java.awt.Window;
++import java.awt.event.ActionEvent;
++import java.awt.event.ActionListener;
+ import java.util.Map;
+-import java.util.Timer;
++//import java.util.Timer;
+ import java.util.TimerTask;
+ import java.util.WeakHashMap;
++import javax.swing.Timer;
+ 
+ import net.jcip.annotations.GuardedBy;
+ import net.jcip.annotations.ThreadSafe;
+ 
+ import org.fest.swing.annotation.RunsInCurrentThread;
++import org.fest.swing.annotation.RunsInEDT;
+ 
+ /**
+  * Understands the information collected by the monitors in this package.
+@@ -54,7 +58,9 @@
+   private final Object lock = new Object();
+ 
+   Windows() {
+-    windowReadyTimer = new Timer("Window Ready Timer", true);
++	  
++    //windowReadyTimer = new Timer("Window Ready Timer", true);
++	  windowReadyTimer = new Timer(WINDOW_READY_DELAY, null);
+   }
+ 
+   /**
+@@ -95,16 +101,34 @@
+    * Marks the given window as "showing."
+    * @param w the given window.
+    */
+-  void markAsShowing(final Window w) {
++/*  void markAsShowing(final Window w) {
+     synchronized(lock) {
+       TimerTask task = new TimerTask() {
+         public void run() { markAsReady(w); }
+       };
+       windowReadyTimer.schedule(new ProtectingTimerTask(task), WINDOW_READY_DELAY);
+-      pending.put(w, task);
++      pending.put(w, task);  
+     }
++  }*/
++
++  @RunsInEDT
++  void markAsShowingInEDT(final Window w) {
++	  synchronized(lock) {
++		  final TimerTask task = new TimerTask() {
++			public void run() {	markAsReady(w); }
++		  };
++		  
++		  windowReadyTimer.addActionListener(new ActionListener() {
++				public void actionPerformed(ActionEvent e) {
++					task.run();
++				}}); 
++				  
++		  windowReadyTimer.setCoalesce(false);
++		  windowReadyTimer.setRepeats(false);
++		  pending.put(w, task);
++	  }
+   }
+-
++  
+   /**
+    * Marks the given window as "ready to receive OS-level event input."
+    * @param w the given window.
+Index: src/main/java/org/fest/swing/monitor/WindowVisibilityMonitor.java
+===================================================================
+--- src/main/java/org/fest/swing/monitor/WindowVisibilityMonitor.java	(revision 451)
++++ src/main/java/org/fest/swing/monitor/WindowVisibilityMonitor.java	(working copy)
+@@ -40,7 +40,7 @@
+   public void componentShown(ComponentEvent e) {
+     Object source = e.getSource();
+     if (!(source instanceof Window)) return;
+-    windows.markAsShowing((Window)source);
++    windows.markAsShowingInEDT((Window)source);
+   }
+ 
+   public void componentHidden(ComponentEvent e) {
+Index: src/test/java/org/fest/swing/core/BasicRobot_WithoutScreenLock_TestCase.java
+===================================================================
+--- src/test/java/org/fest/swing/core/BasicRobot_WithoutScreenLock_TestCase.java	(revision 0)
++++ src/test/java/org/fest/swing/core/BasicRobot_WithoutScreenLock_TestCase.java	(revision 0)
+@@ -0,0 +1,100 @@
++/*
++ * Created on Nov. 25, 2009
++ * Mel Llaguno
++ * http://www.aclaro.com
++ * ------------------------------------
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
++ * in compliance with the License. You may obtain a copy of the License at
++ *
++ * http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software distributed under the License
++ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
++ * or implied. See the License for the specific language governing permissions and limitations under
++ * the License.
++ *
++ * Copyright @2007-2009 the original author or authors.
++ */
++package org.fest.swing.core;
++
++import java.awt.Point;
++
++import javax.swing.JPopupMenu;
++import javax.swing.JTextField;
++
++import org.fest.swing.annotation.RunsInEDT;
++import org.fest.swing.edt.GuiQuery;
++import org.fest.swing.test.core.EDTSafeTestCase;
++import org.fest.swing.test.swing.TestWindow;
++import org.junit.After;
++import org.junit.Before;
++
++import static org.fest.assertions.Assertions.assertThat;
++import static org.fest.swing.edt.GuiActionRunner.execute;
++import static org.fest.swing.query.ComponentShowingQuery.isShowing;
++import static org.fest.swing.query.ComponentLocationOnScreenQuery.locationOnScreen;
++import static org.fest.swing.test.task.ComponentRequestFocusAndWaitForFocusGainTask.giveFocusAndWaitTillIsFocused;
++import static org.fest.swing.test.task.ComponentSetPopupMenuTask.createAndSetPopupMenu;
++
++public class BasicRobot_WithoutScreenLock_TestCase extends EDTSafeTestCase {
++	
++	BasicRobot robot;
++	MyWindow window;
++	
++	@Before
++	public final void setUp() {
++		robot = (BasicRobot)BasicRobot.robotWithNewAwtHierarchyWithoutScreenLock();
++		window = MyWindow.createAndShow(getClass());
++		
++		beforeShowingWindow();
++		
++		robot.showWindow(window);
++		
++		assertThat(isShowing(window)).isTrue();
++		assertThat(locationOnScreen(window)).isEqualTo(new Point(100, 100));	
++		
++	}
++	
++	void beforeShowingWindow() {}
++	
++	@After
++	public final void tearDown() {
++		try {
++			window.destroy();
++		} finally {
++			robot.cleanUp();
++		}
++	}
++
++	@RunsInEDT
++	final void giveFocusToTextField() {
++		giveFocusAndWaitTillIsFocused(window.textField);
++	}
++
++	@RunsInEDT
++	final JPopupMenu addPopupMenuToTextField() {
++		return createAndSetPopupMenu(window.textField, "Luke", "Leia");
++	}
++
++	static class MyWindow extends TestWindow {
++	
++		private static final long serialVersionUID = 1L;
++
++	    final JTextField textField = new JTextField(10);
++
++	    @RunsInEDT
++	    static MyWindow createAndShow(final Class<?> testClass) {
++	      return execute(new GuiQuery<MyWindow>() {
++	        protected MyWindow executeInEDT() {
++	          return display(new MyWindow(testClass));
++	        }
++	      });
++	    }
++
++	    private MyWindow(Class<?> testClass) {
++	      super(testClass);
++	      addComponents(textField);
++	    }
++	}	
++}
+Index: src/test/java/org/fest/swing/driver/JAppletDriver_Test.java
+===================================================================
+--- src/test/java/org/fest/swing/driver/JAppletDriver_Test.java	(revision 0)
++++ src/test/java/org/fest/swing/driver/JAppletDriver_Test.java	(revision 0)
+@@ -0,0 +1,196 @@
++/*
++ * Created on Nov. 25, 2009
++ * Mel Llaguno
++ * http://www.aclaro.com
++ * ------------------------------------
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
++ * in compliance with the License. You may obtain a copy of the License at
++ *
++ * http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software distributed under the License
++ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
++ * or implied. See the License for the specific language governing permissions and limitations under
++ * the License.
++ *
++ * Copyright @2007-2009 the original author or authors.
++ */
++package org.fest.swing.driver;
++
++import java.applet.Applet;
++import java.applet.AppletContext;
++import java.net.MalformedURLException;
++import java.net.URL;
++import java.util.Enumeration;
++
++import javax.swing.JApplet;
++
++import org.fest.mocks.EasyMockTemplate;
++import org.fest.swing.test.core.EDTSafeTestCase;
++import org.fest.swing.core.Robot;
++import org.junit.Before;
++import org.junit.Test;
++
++import static org.fest.assertions.Assertions.assertThat;
++
++import static org.easymock.classextension.EasyMock.replay;
++import static org.easymock.classextension.EasyMock.createMock;
++import static org.easymock.EasyMock.expectLastCall;
++import static org.easymock.EasyMock.expect;
++
++public class JAppletDriver_Test extends EDTSafeTestCase {
++	
++	private JAppletDriver driver;
++	private JApplet target;
++	private Robot robot;
++
++	@Before public void setUp() {
++		robot = createMock(Robot.class);
++		target = createMock(JApplet.class);
++		driver = new JAppletDriver(robot, target);
++	}
++	
++	@Test
++	public void should_get_applet_context()
++	{
++		final AppletContext context = createMock(AppletContext.class);
++		
++		new EasyMockTemplate(target()){
++			protected void expectations() {
++				expect(target.getAppletContext()).andReturn(context);
++			}
++			
++			protected void codeToTest() {
++				assertThat(driver.getAppletContext()).isSameAs(context);
++			}
++		}.run();
++	}
++	
++	@Test
++	public void should_applet_resize()
++	{
++		final int width = 10;
++		final int height = 10;
++		
++		new EasyMockTemplate(target()){
++			protected void expectations() {
++				target.resize(10,10);
++				expectLastCall().once();
++			}
++			
++			protected void codeToTest() {
++				driver.appletResize(width, height);
++			}
++		}.run();
++	}
++	
++	@Test
++	public void should_get_code_base() throws MalformedURLException
++	{
++		final URL url = new URL("http://localhost");
++		
++		new EasyMockTemplate(target()){
++			protected void expectations() {
++				expect(target.getCodeBase()).andReturn(url);
++			}
++			
++			protected void codeToTest() {
++				assertThat(driver.getCodeBase()).isSameAs(url);
++			}
++		}.run();
++	}
++	
++	@Test
++	public void should_get_document_base() throws MalformedURLException
++	{
++		final URL url = new URL("http://localhost");
++		
++		new EasyMockTemplate(target()){
++			protected void expectations() {
++				expect(target.getDocumentBase()).andReturn(url);
++			}
++			
++			protected void codeToTest() {
++				assertThat(driver.getDocumentBase()).isSameAs(url);
++			}
++		}.run();
++	}
++	
++	@Test
++	public void should_get_parameter()
++	{
++		final String parameter = "parameter";
++		final String name = "name";
++		
++		new EasyMockTemplate(target()){
++			protected void expectations() {
++				expect(target.getParameter(name)).andReturn(parameter);
++			}
++			
++			protected void codeToTest() {
++				assertThat(driver.getParameter(name)).isSameAs(parameter);
++			}
++		}.run();
++	}
++	
++	@Test
++	public void is_active()
++	{
++		final boolean active = true;
++		
++		new EasyMockTemplate(target()){
++			protected void expectations() {
++				expect(target.isActive()).andReturn(active);
++			}
++			
++			protected void codeToTest() {
++				assertThat(driver.isActive());
++			}
++		}.run();
++	}
++
++	@Test
++	public void should_get_applet()
++	{
++		final AppletContext context = createMock(AppletContext.class);
++		final Applet applet = createMock(Applet.class);
++		final String name = "applet";
++		
++		new EasyMockTemplate(target()){
++			protected void expectations() {
++				expect(target.getAppletContext()).andReturn(context);
++				expect(context.getApplet(name)).andReturn(applet);
++			}
++			
++			protected void codeToTest() {
++				replay(context);
++				replay(applet);
++				assertThat(driver.getApplet(name)).isSameAs(applet);
++			}
++		}.run();
++	}
++	
++	@Test
++	public void should_get_applets()
++	{
++		final AppletContext context = createMock(AppletContext.class);
++		final Enumeration<Applet> applets = createMock(Enumeration.class);
++		
++		new EasyMockTemplate(target()){
++			protected void expectations() {
++				expect(target.getAppletContext()).andReturn(context);
++				expect(context.getApplets()).andReturn(applets);
++			}
++			
++			protected void codeToTest() {
++				replay(context);
++				replay(applets);
++				assertThat(driver.getApplets()).isSameAs(applets);
++				
++			}
++		}.run();
++	}
++	
++	JApplet target() { return target; }
++}
+Index: src/test/java/org/fest/swing/fixture/JAppletFixtureTest.java
+===================================================================
+--- src/test/java/org/fest/swing/fixture/JAppletFixtureTest.java	(revision 0)
++++ src/test/java/org/fest/swing/fixture/JAppletFixtureTest.java	(revision 0)
+@@ -0,0 +1,136 @@
++/*
++ * Created on Nov. 25, 2009
++ * Mel Llaguno
++ * http://www.aclaro.com
++ * ------------------------------------
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
++ * in compliance with the License. You may obtain a copy of the License at
++ *
++ * http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software distributed under the License
++ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
++ * or implied. See the License for the specific language governing permissions and limitations under
++ * the License.
++ *
++ * Copyright @2007-2009 the original author or authors.
++ */
++package org.fest.swing.fixture;
++
++import static org.easymock.classextension.EasyMock.createMock;
++import static org.fest.assertions.Assertions.assertThat;
++import static org.fest.swing.data.TableCell.row;
++import static org.fest.swing.test.builder.JApplets.applet;
++
++import java.awt.Point;
++import java.io.File;
++
++import javax.swing.JApplet;
++
++import org.fest.swing.core.KeyPressInfo;
++import org.fest.swing.core.MouseButton;
++import org.fest.swing.data.TableCell;
++import org.fest.swing.driver.ComponentDriver;
++import org.fest.swing.driver.JAppletDriver;
++import org.junit.Test;
++
++public class JAppletFixtureTest extends
++		CommonComponentFixture_TestCase<JApplet> {
++	
++	private JAppletDriver driver;
++	private JApplet target;
++	private JAppletFixture fixture;
++
++	CommonComponentFixture fixture() {
++		return fixture;
++	}
++
++	ComponentDriver driver() {
++		return driver;
++	}
++
++	JApplet target() {
++		return target;
++	}
++
++	void onSetUp() {
++		driver = createMock(JAppletDriver.class);
++		target = applet().createNew();
++		fixture = new JAppletFixture(robot, target);
++		fixture.driver(driver);
++	}
++
++	@Test(expected = NullPointerException.class)
++	public void should_throw_error_if_driver_is_null() {
++		fixture.driver(null);
++	}
++
++	@Test
++	public void should_create_fixture_with_given_component_name() {
++		String name = "applet";
++		expectLookupByName(name, JApplet.class);
++		verifyLookup(new JAppletFixture(robot, name));
++	}
++	
++	@Test
++	public void should_create_keyPressInfo(){
++		int code = 0x41;
++		int modifier = 0x0;
++		KeyPressInfo info = fixture.createKeyPressInfo(code, modifier);
++		
++		assertThat(info.keyCode()).isEqualTo(code);
++		assertThat(info.modifiers()[0]).isEqualTo(modifier);
++	}
++	
++	@Test
++	public void should_create_point(){
++		int x = 10;
++		int y = 20;
++		Point point = new Point(x,y);
++		
++		assertThat(fixture.createPoint(x, y)).isEqualTo(point);
++	}
++	
++	@Test 
++	public void should_create_mouseButton(){
++		int buttonMask = 16;
++		MouseButton button = MouseButton.lookup(buttonMask);
++		
++		assertThat(fixture.createMouseButton(buttonMask)).isEqualTo(button);
++	}
++	
++	@Test 
++	public void should_create_file(){
++		String name = "fileName";
++		File file = new File(name);
++		
++		assertThat(fixture.createFile(name)).isEqualTo(file);
++	}
++	
++	@Test
++	public void should_create_table_cell(){
++		int row = 1;
++		int column = 2;
++		TableCell cell = row(row).column(column);
++		
++		assertThat(fixture.createTableCell(row, column)).isEqualTo(cell);
++	}
++	
++	@Test
++	public void should_create_table_cells(){
++		Object [] objects = new Object[] { "0,0", "1,1", "2,2"};
++		TableCell[] array = new TableCell [] { row(0).column(0), row(1).column(1), row(2).column(2) };
++		
++		assertThat(fixture.createTableCells(objects)).isEqualTo(array);
++		assertThat(fixture.createTableCells(objects).length).isEqualTo(3);
++	}
++	
++	@Test
++	public void should_create_string_array(){
++		Object [] objects = new Object [] {"string1", "string2"};
++		
++		assertThat(fixture.createStringArray(objects)).isEqualTo(objects);
++		assertThat(fixture.createStringArray(objects).length).isEqualTo(2);
++	}
++}
+Index: src/test/java/org/fest/swing/test/builder/JApplets.java
+===================================================================
+--- src/test/java/org/fest/swing/test/builder/JApplets.java	(revision 0)
++++ src/test/java/org/fest/swing/test/builder/JApplets.java	(revision 0)
+@@ -0,0 +1,56 @@
++/*
++ * Created on Dec 8th, 2009
++ * Mel Llaguno
++ * http://www.aclaro.com
++ * ------------------------------------
++ *
++ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
++ * in compliance with the License. You may obtain a copy of the License at
++ *
++ * http://www.apache.org/licenses/LICENSE-2.0
++ *
++ * Unless required by applicable law or agreed to in writing, software distributed under the License
++ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
++ * or implied. See the License for the specific language governing permissions and limitations under
++ * the License.
++ *
++ * Copyright @2007-2009 the original author or authors.
++ */
++
++package org.fest.swing.test.builder;
++
++import javax.swing.JApplet;
++
++import org.fest.swing.annotation.RunsInEDT;
++import org.fest.swing.edt.GuiQuery;
++
++import static org.fest.swing.edt.GuiActionRunner.execute;
++
++public final class JApplets {
++	
++	private JApplets() {}
++	
++	public static JAppletFactory applet() {
++		return new JAppletFactory();
++	}
++
++	public static class JAppletFactory {
++		String name;
++		
++		public JAppletFactory withName(String newName) {
++			name = newName;
++			return this;
++		}
++		
++		@RunsInEDT
++		public JApplet createNew() {
++			return execute( new GuiQuery<JApplet>() {
++				protected JApplet executeInEDT() {
++					JApplet applet = new JApplet();
++					applet.setName(name);
++					return applet;
++				}
++			});
++		}
++	}
++}
